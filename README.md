@@ -5,7 +5,7 @@ using Docker, QEMU and KVM. Kylin is an example configuration, not a special
 case in the lifecycle engine.
 
 **Development preview.** The JSON contract is `v1alpha1`. Windows examples
-are experimental until tested with user-supplied installation media. See
+have build-specific evidence, not blanket compatibility guarantees. See
 [compatibility](docs/compatibility.md) for evidence and limitations.
 
 ## Requirements
@@ -21,8 +21,8 @@ are experimental until tested with user-supplied installation media. See
 
 ```sh
 make build
-bin/vmctl doctor
 bin/vmctl image build runtime
+bin/vmctl doctor
 # Copy an example JSON and set media.iso to your installation media.
 bin/vmctl validate my-vm.json
 bin/vmctl create my-vm.json
@@ -30,7 +30,11 @@ bin/vmctl install my-vm
 bin/vmctl console my-vm --show-secret
 ```
 
-For manual installation, connect a VNC client to the displayed address.
+Commands below run from the repository root. `make build` produces `bin/vmctl`;
+add that directory to `PATH` to use the shorter `vmctl` commands in the examples.
+Build the runtime before `doctor`: its KVM and firmware checks use that image.
+
+For interactive installation, connect a VNC client to the displayed address.
 After completing OS installation, shut down the guest, then run:
 
 ```sh
@@ -65,7 +69,8 @@ and comprehensive guest verification are separate and remain untested.
 - `verify` performs read-only guest checks for the Kickstart completion marker
   and mounted installation media, then records the verified installation state.
   It is not a comprehensive OS or network security audit.
-- Default output is indented JSON; `--json` selects compact machine-readable JSON.
+- Structured command output is indented JSON; `--json` selects compact JSON.
+  `logs` and `image build` emit runtime text rather than JSON.
 
 See [configuration](docs/configuration.md), [lifecycle](docs/lifecycle.md),
 [security](SECURITY.md), and [contributing](CONTRIBUTING.md).
@@ -81,9 +86,9 @@ backend. Windows installation and activation remain the user's responsibility.
 
 `make dist` creates a source archive from an explicit allowlist. It excludes
 the legacy Kylin shell implementation, Git history, VM disks, private keys and
-installation media. The legacy files remain in this development worktree for
-reference; they are not part of the new CLI release. No public repository or
-runtime image is published automatically.
+installation media. This repository contains only the new CLI and its examples;
+legacy files and private development history are not included. No runtime image
+is published automatically.
 
 Licensed under Apache-2.0. Runtime packages retain their own licenses; see
 [NOTICE](NOTICE). OS media and guest licenses are not included.
