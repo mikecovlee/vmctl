@@ -7,8 +7,8 @@ iso=${1:?Usage: bash prepare.sh /path/to/windows11.iso}
 for tool in 7z openssl genisoimage; do
     command -v "$tool" >/dev/null || { printf 'Missing tool: %s\n' "$tool" >&2; exit 1; }
 done
-template="$root/../windows11-assisted/Autounattend.xml.tmpl"
-[[ -f "$template" ]] || { printf 'Missing assisted template\n' >&2; exit 1; }
+template="$root/Autounattend.xml.tmpl"
+[[ -f "$template" ]] || { printf 'Missing answer template\n' >&2; exit 1; }
 # Atomic directory creation refuses to replace credentials or media in use.
 mkdir -m 700 "$root/generated"
 out="$root/generated"

@@ -1,11 +1,11 @@
-# Windows 11 unattended installation
+# Windows 11
 
-One fresh installation of **Chinese Windows 11 Pro 26300.9457, WIM index 4**
+One fresh installation of **Windows 11 Pro 26300.9457, WIM index 4**
 reached the desktop with **no keyboard or mouse input**, including across Setup
 reboots and offline OOBE. Resources: 2 vCPUs, 4096 MiB RAM, 64 GiB disk;
 UEFI/Secure Boot/TPM 2 options, SATA, e1000 and isolated networking.
 
-This example builds on the sibling assisted answer template. It adds a Pro
+This example includes its own answer template. The generator adds a Pro
 default installation key and builds a derived ISO whose UEFI El Torito entry
 uses the supplied media's `efi/microsoft/boot/efisys_noprompt.bin`.
 No firmware signature patches or hardware-check bypasses are applied.
@@ -19,10 +19,10 @@ and that its language is zh-CN. Other editions, channels, indexes or builds
 require adapting and testing the template first.
 
 ```sh
-bash examples/windows11-unattended/prepare.sh /path/to/windows11.iso
-vmctl create examples/windows11-unattended/vm.json
-vmctl install windows11-unattended
-vmctl console windows11-unattended --show-secret
+bash examples/windows11/prepare.sh /path/to/windows11.iso
+vmctl create examples/windows11/vm.json
+vmctl install windows11
+vmctl console windows11 --show-secret
 ```
 
 Observe VNC at `127.0.0.1:5904` without sending keys. Setup partitions guest
@@ -30,8 +30,8 @@ disk 0 (wiping it), installs Pro, creates local administrator `vmctl`, completes
 offline OOBE and requests one automatic login. After observing the desktop:
 
 ```sh
-vmctl finish-install windows11-unattended
-vmctl status windows11-unattended
+vmctl finish-install windows11
+vmctl status windows11
 ```
 
 `install.mode` remains `manual`: vmctl boots the media; the answer file drives
