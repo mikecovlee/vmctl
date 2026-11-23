@@ -79,8 +79,10 @@ See [configuration](docs/configuration.md), [lifecycle](docs/lifecycle.md),
 
 The first release focuses on single-host lifecycle management, manual ISO
 installation and a generic Kickstart template renderer. It does not provide
-snapshot/clone commands, a web UI, clusters, live migration or a Windows-host
-backend. Windows installation and activation remain the user's responsibility.
+clone commands, a web UI, clusters, live migration or a Windows-host backend.
+Pause/resume, stopped disk/NVRAM/TPM snapshots and experimental BIOS-only memory
+checkpoints are documented in [lifecycle](docs/lifecycle.md).
+Windows installation and activation remain the user's responsibility.
 
 ## Source distribution
 

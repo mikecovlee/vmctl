@@ -28,4 +28,50 @@ Stopping Docker itself does not run this CLI shutdown sequence: stop guests firs
 
 `delete NAME --yes` requires a stopped instance and removes its state and disk.
 There is no automatic migration of the historical Kylin shell-script installation.
-Snapshot and clone workflows are outside this initial CLI release.
+Deleting an instance also removes its snapshots and internal checkpoints.
+Clone workflows are not implemented.
+
+## Pause and resume
+
+`pause NAME` stops guest CPUs through QMP; `resume NAME` continues them. Both are
+idempotent for their target state. RAM remains allocated: pausing is not a durable
+checkpoint. `status` includes `runtime` (`running`, `paused`, `stopped`, or another
+QEMU status); `running` continues to mean the container is alive, including paused
+guests. Resume a paused guest before requesting normal ACPI shutdown.
+
+## Stopped snapshots
+
+```sh
+vmctl stop demo
+vmctl snapshot demo baseline
+vmctl snapshots demo
+vmctl restore demo baseline --yes
+vmctl start demo
+```
+
+Snapshots copy the disk, optional UEFI NVRAM, persistent TPM files and installation
+record into a private instance-local directory. Running instances are rejected;
+existing snapshot labels cannot be overwritten. Restore replaces those files,
+requires a stopped instance and explicit confirmation, and leaves it stopped.
+These copies do not include RAM, external installation media, credentials or the
+instance configuration. Keep the configuration and media compatible. Copying can
+consume substantial space. Runtime errors during restore trigger rollback; abrupt
+host power loss during its multi-file replacement is not transactionally covered.
+
+## Experimental memory checkpoints
+
+```sh
+vmctl checkpoint demo before-change --yes
+vmctl restore-checkpoint demo before-change --yes
+```
+
+These use QEMU internal `savevm`/`loadvm` snapshots inside the qcow2, capturing RAM,
+CPU/device state and disk state. They currently require a live QEMU process and
+**BIOS without TPM**. UEFI/TPM guests (including the Windows 11 example) are
+explicitly rejected: use stopped snapshots instead. Existing checkpoint labels
+may be replaced, hence confirmation is required for both operations. Restore can
+discard subsequent guest work and can leave the guest running; inspect `status`.
+Use the same runtime image, CPU and machine configuration. Cross-version or
+cross-host portability and application-level consistency are not guaranteed.
+The CLI's QMP deadline can expire while QEMU is still processing a large memory
+snapshot; a timeout is not proof of cancellation. Inspect QEMU before retrying.

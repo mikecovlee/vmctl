@@ -58,7 +58,7 @@ func New() *cobra.Command {
 		}
 		return emit(cmd, records)
 	}})
-	for _, action := range []string{"start", "install", "finish-install", "status", "verify"} {
+	for _, action := range []string{"start", "install", "finish-install", "status", "verify", "pause", "resume"} {
 		var wait bool
 		command := &cobra.Command{Use: action + " NAME", Args: cobra.ExactArgs(1), RunE: func(cmd *cobra.Command, args []string) error {
 			manager, err := o.manager()
@@ -66,6 +66,8 @@ func New() *cobra.Command {
 				return err
 			}
 			switch cmd.Name() {
+			case "pause", "resume":
+				err = manager.Pause(cmd.Context(), args[0], cmd.Name() == "resume")
 			case "start":
 				err = manager.Start(cmd.Context(), args[0], false)
 			case "install":
@@ -116,6 +118,7 @@ func New() *cobra.Command {
 	remove.Flags().BoolVar(&yes, "yes", false, "Confirm permanent instance deletion")
 	root.AddCommand(stop, remove)
 	o.addRuntimeCommands(root)
+	o.addSnapshotCommands(root)
 	return root
 }
 
