@@ -13,7 +13,10 @@ The default setup key **does not activate Windows**.
 
 ## Prepare and run
 
-On a Linux host, install `7z`, `openssl` and `genisoimage`. Supply your own
+First build vmctl and its runtime as described in the root README, and put
+`bin/` on `PATH`. Run the following commands from the repository root.
+On a Linux host, install `7z`, `openssl`, `genisoimage`, and `wiminfo` (wimlib).
+Supply your own
 appropriately licensed ISO. Confirm with `wiminfo` that image index 4 is Pro
 and that its language is zh-CN. Other editions, channels, indexes or builds
 require adapting and testing the template first.
@@ -40,6 +43,9 @@ Windows verification. Initial boot is DVD-first, subsequent boots disk-first;
 do not repeatedly force DVD boot on an installed disk.
 
 ## Private outputs and limitations
+
+This example and the Kylin example both default to VNC port 5904. Set a different
+`console.vncPort` before creating a second simultaneous instance.
 
 - `generated/password.txt` contains the random Windows password, separate from
   the VNC password. The rendered XML and derived ISO also contain this password.

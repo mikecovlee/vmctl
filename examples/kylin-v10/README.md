@@ -2,6 +2,10 @@
 
 Supply your own licensed Kylin Server V10 SP3 x86_64 ISO as `kylin.iso` in this directory. Media and installed disks are not distributed.
 
+Build the CLI with `make build`, add `bin/` to `PATH`, and run these commands
+from the repository root. For simultaneous examples, choose distinct VNC ports
+before `create`; the Windows 11 example also defaults to port 5904.
+
 ```sh
 vmctl image build runtime
 vmctl validate examples/kylin-v10/vm.json
