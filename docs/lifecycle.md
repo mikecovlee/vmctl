@@ -48,6 +48,9 @@ Each payload file has a SHA-256 checksum. Import rejects unsafe paths, links,
 duplicate entries, unexpected files and checksum mismatches, and publishes the
 new instance directory only after validation. It refuses an existing instance
 name and leaves the imported instance stopped.
+Import also validates management credentials and runs `qemu-img info/check`
+using the runtime image. Only self-contained qcow2 disks without backing files
+are accepted. Required NVRAM/TPM components must have the expected types.
 
 The archive contains secrets and is **not encrypted**; store and transfer it as
 private material. Checksums detect corruption, not malicious replacement of a
@@ -73,6 +76,8 @@ Preparation requires space for a private staging copy. Tar extraction does not
 preserve sparse allocation, so budget for expanded disk files even when the
 compressed archive is small. Imports are limited to 1 TiB of declared payload
 and 10,000 entries.
+Individual JSON/key metadata entries are limited to 1 MiB, the manifest to 4 MiB,
+and each NVRAM/TPM file to 64 MiB. Copy loops check cancellation between chunks.
 
 ## Pause and resume
 
@@ -96,6 +101,7 @@ Snapshots copy the disk, optional UEFI NVRAM, persistent TPM files and installat
 record into a private instance-local directory. Running instances are rejected;
 existing snapshot labels cannot be overwritten. Restore replaces those files,
 requires a stopped instance and explicit confirmation, and leaves it stopped.
+Missing required UEFI or TPM state is rejected before any live file is replaced.
 These copies do not include RAM, external installation media, credentials or the
 instance configuration. Keep the configuration and media compatible. Copying can
 consume substantial space. Runtime errors during restore trigger rollback; abrupt
