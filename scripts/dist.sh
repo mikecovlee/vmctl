@@ -5,7 +5,7 @@ cd "$root"
 mkdir -p dist
 manifest=$(mktemp)
 trap 'rm -f "$manifest"' EXIT HUP INT TERM
-printf '%s\0' go.mod go.sum Makefile README.md CONTRIBUTING.md SECURITY.md LICENSE NOTICE > "$manifest"
+printf '%s\0' go.mod go.sum Makefile README.md AGENTS.md CONTRIBUTING.md SECURITY.md LICENSE NOTICE > "$manifest"
 # Select source file types explicitly; never recursively archive user media or instance data.
 find cmd internal -type f -name '*.go' -print0 >> "$manifest"
 find runtime -type f \( -name Dockerfile -o -name '*.sh' \) -print0 >> "$manifest"
