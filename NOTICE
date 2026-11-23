@@ -1,0 +1,15 @@
+vmctl
+
+The Go command uses Cobra, pflag, and mousetrap under their respective
+upstream licenses. Dependency versions are recorded in go.mod and go.sum.
+
+The optional runtime image is built locally from Debian packages, including
+QEMU, OVMF, and swtpm. These components retain their own licenses and are
+not relicensed by this project. A source release does not include runtime
+images, operating-system installation media, firmware binaries, or guest
+licenses. Anyone redistributing a built runtime image must satisfy the
+licenses and corresponding-source obligations of its included packages.
+
+Example configurations do not grant rights to distribute guest operating
+systems. Installation media and any required licenses must be supplied by
+the user.

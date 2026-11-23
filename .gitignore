@@ -1,0 +1,9 @@
+/bin/
+/dist/
+*.iso
+*.qcow2
+*.sock
+ssh-key
+ssh-key.pub
+credentials.json
+known_hosts
