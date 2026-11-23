@@ -27,7 +27,8 @@ x86-64 installation media. Existing legacy VM storage was not modified.
 
 ## Limits of this evidence
 
-- No Windows ISO was installed. Windows examples remain experimental.
+- Windows installation evidence is scoped to the build and procedure recorded
+  below; other Windows builds remain experimental.
 - The DNS test exercises a controlled UDP DNS endpoint, not every behavior of
   SLIRP's built-in DNS resolver. IPv6 has a route/configuration check rather
   than an enabled-IPv6 egress comparison.
@@ -43,3 +44,23 @@ Run ordinary tests with `make test`. KVM integration tests require explicit
 `VMCTL_KVM_TEST=1`, `VMCTL_TEST_STATE` and `VMCTL_TEST_INSTANCE` settings;
 network tests additionally require `VMCTL_TEST_SSH_PORT`. Use disposable,
 dedicated instances, never production data.
+
+## Windows 11 zero-input installation
+
+Chinese Windows 11 Pro **26300.9457**, image index **4**, completed one fresh
+installation to the desktop with no VNC keyboard/mouse or QMP key injection.
+The instance used 2 vCPUs, 4096 MiB RAM, a new 64 GiB disk, UEFI/Secure Boot/TPM
+options, SATA/e1000 and isolated networking. Existing instances were untouched.
+
+The derived ISO selected the original media's `efisys_noprompt.bin` as its UEFI
+boot image and included the existing assisted answer template with a matching
+Pro default setup key and `WillShowUI=Never`. Passive QMP screenshots showed
+firmware loading, Setup at 22%, the post-reboot installation phase, and finally
+the Chinese desktop. Neither the DVD prompt nor product-key page required input.
+Offline OOBE and automatic local-account login completed.
+
+This was one run, not a repeated-install reliability test. The instance was
+marked `installed-unverified` using `finish-install`. Windows activation,
+guest-side Secure Boot/TPM acceptance, RDP, and Windows ACPI shutdown were not
+verified. The generator in `examples/windows11-unattended` packages this tested
+procedure; generated credentials and ISO images are excluded from source archives.

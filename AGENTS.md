@@ -88,7 +88,9 @@ to use somebody else's instance.
   failures, not evidence of blocked networking.
 - Distinguish firmware/TPM smoke tests from guest installation and guest-side
   validation. The assisted Windows example still requires DVD boot input and
-  skipping the product-key prompt; do not call it fully unattended or activated.
+  skipping the product-key prompt. The separate unattended example has one
+  zero-input desktop installation on the documented build; neither example
+  proves activation or comprehensive Windows verification.
 - Use user-supplied, appropriately licensed OS media. Keep untested guest
   versions experimental and record exactly which version and checks passed.
 
