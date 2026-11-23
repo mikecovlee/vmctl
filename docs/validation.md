@@ -36,7 +36,8 @@ x86-64 installation media. Existing legacy VM storage was not modified.
 - `verify` checks the installation marker and media mount using read-only SSH.
   OS, memory and repository checks above were separate acceptance commands.
 - Independent review was not run: execution was performed directly, as
-  requested. No public repository or release was created.
+  requested. Source was published to https://github.com/mikecovlee/vmctl
+  after user authorization. No release artifact or version tag was published.
 
 Run ordinary tests with `make test`. KVM integration tests require explicit
 `VMCTL_KVM_TEST=1`, `VMCTL_TEST_STATE` and `VMCTL_TEST_INSTANCE` settings;
