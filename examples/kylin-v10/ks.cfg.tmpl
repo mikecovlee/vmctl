@@ -1,0 +1,52 @@
+text
+cdrom
+lang en_US.UTF-8
+keyboard us
+timezone UTC --utc
+rootpw --lock
+selinux --disabled
+firewall --enabled --service=ssh
+network --device={{.MAC}} --bootproto=static --ip=10.0.2.15 --netmask=255.255.255.0 --gateway=10.0.2.2 --hostname={{.Hostname}} --activate --onboot=on
+services --enabled=sshd --disabled=kdump
+firstboot --disable
+skipx
+bootloader --location=mbr
+zerombr
+clearpart --all --initlabel
+autopart --type=lvm
+shutdown
+
+%packages
+@core
+openssh-server
+curl
+%end
+
+%post --erroronfail --log=/root/vmctl-install.log
+set -eu
+mkdir -p /root/.ssh /mnt/iso
+chmod 700 /root/.ssh
+cat > /root/.ssh/authorized_keys <<'KEY'
+{{.PublicKey}}
+KEY
+chmod 600 /root/.ssh/authorized_keys
+sed -i '/^PasswordAuthentication /d; /^PermitRootLogin /d' /etc/ssh/sshd_config
+printf '\nPasswordAuthentication no\nPermitRootLogin prohibit-password\n' >> /etc/ssh/sshd_config
+printf '/dev/sr0 /mnt/iso iso9660 ro,nofail 0 0\n' >> /etc/fstab
+for repo in /etc/yum.repos.d/*.repo; do
+    [ -f "$repo" ] || continue
+    sed -i -E 's/^[[:space:]]*enabled[[:space:]]*=[[:space:]]*1/enabled=0/' "$repo"
+done
+cat > /etc/yum.repos.d/vmctl-media.repo <<'REPO'
+[vmctl-media]
+name=Installation media
+baseurl=file:///mnt/iso
+enabled=1
+gpgcheck=0
+REPO
+for grub in /etc/default/grub /boot/grub2/grub.cfg; do
+    [ -f "$grub" ] || continue
+    sed -i 's/ crashkernel=[^" ]*//g' "$grub"
+done
+printf 'vmctl-install-complete\n' > /root/vmctl-install-complete
+%end

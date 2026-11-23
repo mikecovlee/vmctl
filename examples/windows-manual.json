@@ -1,0 +1,10 @@
+{
+  "apiVersion": "v1alpha1",
+  "name": "windows-demo",
+  "resources": {"cpu": 2, "memoryMiB": 4096, "diskGiB": 64},
+  "media": {"iso": "./windows.iso"},
+  "machine": {"firmware": "uefi", "diskBus": "sata", "nic": "e1000"},
+  "install": {"mode": "manual"},
+  "network": {"mode": "isolated", "forwards": [{"bind": "127.0.0.1", "host": 13389, "guest": 3389}]},
+  "console": {"vncBind": "127.0.0.1", "vncPort": 5902}
+}

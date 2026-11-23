@@ -1,0 +1,9 @@
+{
+  "apiVersion": "v1alpha1",
+  "name": "linux-demo",
+  "resources": {"cpu": 2, "memoryMiB": 2048, "diskGiB": 30},
+  "media": {"iso": "./linux.iso"},
+  "install": {"mode": "manual"},
+  "network": {"mode": "isolated", "forwards": [{"bind": "127.0.0.1", "host": 2222, "guest": 22}]},
+  "console": {"vncBind": "127.0.0.1", "vncPort": 5901}
+}

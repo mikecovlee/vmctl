@@ -1,0 +1,17 @@
+{
+  "apiVersion": "v1alpha1",
+  "name": "kylin-demo",
+  "resources": {"cpu": 2, "memoryMiB": 4096, "diskGiB": 60},
+  "media": {"iso": "./kylin.iso"},
+  "install": {
+    "mode": "kickstart",
+    "template": "./ks.cfg.tmpl",
+    "kernelPath": "images/pxeboot/vmlinuz",
+    "initrdPath": "images/pxeboot/initrd.img"
+  },
+  "network": {
+    "mode": "isolated",
+    "forwards": [{"bind": "127.0.0.1", "host": 2224, "guest": 22}]
+  },
+  "console": {"vncBind": "127.0.0.1", "vncPort": 5904}
+}

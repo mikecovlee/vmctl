@@ -1,0 +1,10 @@
+{
+  "apiVersion": "v1alpha1",
+  "name": "windows11-demo",
+  "resources": {"cpu": 2, "memoryMiB": 4096, "diskGiB": 64},
+  "media": {"iso": "./windows11.iso"},
+  "machine": {"firmware": "uefi", "secureBoot": true, "tpm": true, "diskBus": "sata", "nic": "e1000"},
+  "install": {"mode": "manual"},
+  "network": {"mode": "isolated"},
+  "console": {"vncBind": "127.0.0.1", "vncPort": 5903}
+}
