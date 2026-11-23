@@ -28,6 +28,17 @@ type response struct {
 }
 
 func Execute(ctx context.Context, path string, command Command) error {
+	_, err := Query(ctx, path, command)
+	return err
+}
+
+func Query(ctx context.Context, path string, command Command) (json.RawMessage, error) {
+	var result json.RawMessage
+	err := exchange(ctx, path, command, &result)
+	return result, err
+}
+
+func exchange(ctx context.Context, path string, command Command, result *json.RawMessage) error {
 	bounded, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 	conn, err := (&net.Dialer{}).DialContext(bounded, "unix", path)
@@ -80,6 +91,7 @@ func Execute(ctx context.Context, path string, command Command) error {
 			if len(reply.Return) == 0 {
 				return fmt.Errorf("%w: missing return", ErrProtocol)
 			}
+			*result = reply.Return
 			break
 		}
 	}
