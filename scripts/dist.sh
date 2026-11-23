@@ -10,6 +10,7 @@ printf '%s\0' go.mod go.sum Makefile README.md CONTRIBUTING.md SECURITY.md LICEN
 find cmd internal -type f -name '*.go' -print0 >> "$manifest"
 find runtime -type f \( -name Dockerfile -o -name '*.sh' \) -print0 >> "$manifest"
 find examples -type f \( -name vm.json -o -name '*-manual.json' -o -name '*.tmpl' -o -name README.md \) -print0 >> "$manifest"
+printf '%s\0' examples/windows11-assisted/prepare.sh examples/windows11-assisted/.gitignore >> "$manifest"
 find docs -type f -name '*.md' -print0 >> "$manifest"
 find scripts -type f -name '*.sh' -print0 >> "$manifest"
 find .github/workflows -type f \( -name '*.yml' -o -name '*.yaml' \) -print0 >> "$manifest"
