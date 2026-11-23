@@ -1,10 +1,14 @@
 # Lifecycle
 
-`create CONFIG` allocates private instance metadata. It does not boot a VM.
-`install NAME` creates a new disk and boots installation media; it refuses to
-overwrite an existing disk. A repeated `start` of a running instance is a no-op.
+`create CONFIG` allocates private instance metadata, a new qcow2 disk and,
+when requested, private UEFI NVRAM. It requires the runtime image but does not
+boot a VM. An existing instance name is rejected.
+`install NAME` boots installation media on that disk and requires the `created`
+installation state. A repeated `start` of a running instance is a no-op.
 
-For manual installation, use VNC and complete the installer. The initial boot
+For interactive media, use VNC and complete the installer. The Windows 11 example
+also uses `manual` mode, but its media drives Setup through an answer file.
+The initial boot
 tries installation media; subsequent guest reboots prefer disk. After installation,
 `finish-install NAME` records the user's declaration, not a verified result.
 
@@ -15,6 +19,7 @@ the completion marker and mounted installation media without installing packages
 
 `status` separates installation phase from current container running state.
 `logs` returns recent container logs. `console` gives the VNC endpoint.
+Use `status NAME`, `logs NAME`, or `console NAME`; `list` enumerates instances.
 
 `stop NAME` sends ACPI powerdown through QMP and waits up to 60 seconds. A guest
 that ignores ACPI causes a nonzero result and is left running. Only `stop NAME

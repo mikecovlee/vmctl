@@ -4,7 +4,7 @@ Configurations are strict JSON with `apiVersion: "v1alpha1"`. Unknown fields,
 trailing JSON values and inputs larger than 1 MiB are rejected. Paths in `media`
 and `install.template` are relative to the configuration file, not the shell.
 
-Required fields are `name`, `resources` (`cpu`, `memoryMiB`, `diskGiB`) and
+Required fields are `apiVersion`, `name`, `resources` (`cpu`, `memoryMiB`, `diskGiB`) and
 `media.iso`. Optional `media.extraISOs` attach additional read-only installation
 or driver media. The caller supplies all ISO files and their licenses.
 
@@ -31,6 +31,7 @@ fields are `Hostname`, `MAC` and `PublicKey`. See `examples/kylin-v10`.
 
 State defaults to `$XDG_STATE_HOME/vmctl` or `~/.local/state/vmctl`. Override it
 with `--state-dir`. Each instance has its own disk, configuration, credentials,
-SSH identity, known-hosts file, QMP socket and (when selected) NVRAM/TPM state.
+QMP socket and (when selected) NVRAM/TPM state. Kickstart installation creates
+the SSH identity; SSH verification creates its known-hosts file.
 Do not copy a running instance or independently restore only its disk when TPM
 or firmware state participates in guest identity.
