@@ -87,10 +87,9 @@ to use somebody else's instance.
   endpoint works. Missing tools, authentication errors and boot delays are test
   failures, not evidence of blocked networking.
 - Distinguish firmware/TPM smoke tests from guest installation and guest-side
-  validation. The assisted Windows example still requires DVD boot input and
-  skipping the product-key prompt. The separate unattended example has one
-  zero-input desktop installation on the documented build; neither example
-  proves activation or comprehensive Windows verification.
+  validation. The Windows 11 example has one
+  zero-input desktop installation on the documented build; this does not
+  prove activation or comprehensive Windows verification.
 - Use user-supplied, appropriately licensed OS media. Keep untested guest
   versions experimental and record exactly which version and checks passed.
 

@@ -45,7 +45,7 @@ bin/vmctl delete my-vm --yes
 For unattended Kylin installation, follow
 [examples/kylin-v10](examples/kylin-v10/README.md).
 For the tested zero-input Windows 11 Pro installation, follow
-[examples/windows11-unattended](examples/windows11-unattended/README.md).
+[examples/windows11](examples/windows11/README.md).
 Its single tested build reached the desktop automatically; Windows activation
 and comprehensive guest verification are separate and remain untested.
 

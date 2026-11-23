@@ -47,20 +47,20 @@ dedicated instances, never production data.
 
 ## Windows 11 zero-input installation
 
-Chinese Windows 11 Pro **26300.9457**, image index **4**, completed one fresh
+Windows 11 Pro **26300.9457**, image index **4**, completed one fresh
 installation to the desktop with no VNC keyboard/mouse or QMP key injection.
 The instance used 2 vCPUs, 4096 MiB RAM, a new 64 GiB disk, UEFI/Secure Boot/TPM
 options, SATA/e1000 and isolated networking. Existing instances were untouched.
 
 The derived ISO selected the original media's `efisys_noprompt.bin` as its UEFI
-boot image and included the existing assisted answer template with a matching
+boot image and included an answer template with a matching
 Pro default setup key and `WillShowUI=Never`. Passive QMP screenshots showed
 firmware loading, Setup at 22%, the post-reboot installation phase, and finally
-the Chinese desktop. Neither the DVD prompt nor product-key page required input.
+the desktop. Neither the DVD prompt nor product-key page required input.
 Offline OOBE and automatic local-account login completed.
 
 This was one run, not a repeated-install reliability test. The instance was
 marked `installed-unverified` using `finish-install`. Windows activation,
 guest-side Secure Boot/TPM acceptance, RDP, and Windows ACPI shutdown were not
-verified. The generator in `examples/windows11-unattended` packages this tested
+verified. The generator in `examples/windows11` packages this tested
 procedure; generated credentials and ISO images are excluded from source archives.
