@@ -82,6 +82,9 @@ installation and a generic Kickstart template renderer. It does not provide
 clone commands, a web UI, clusters, live migration or a Windows-host backend.
 Pause/resume, stopped disk/NVRAM/TPM snapshots and experimental BIOS-only memory
 checkpoints are documented in [lifecycle](docs/lifecycle.md).
+Stopped instances can also be exported and imported as private bundles with
+`export NAME ARCHIVE` and `import ARCHIVE NAME`; see the lifecycle guide for
+media relocation, preserved identity and credential handling.
 Windows installation and activation remain the user's responsibility.
 
 ## Source distribution

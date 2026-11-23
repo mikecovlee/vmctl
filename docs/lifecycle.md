@@ -31,6 +31,49 @@ There is no automatic migration of the historical Kylin shell-script installatio
 Deleting an instance also removes its snapshots and internal checkpoints.
 Clone workflows are not implemented.
 
+## Stopped export and import
+
+```sh
+vmctl stop demo
+vmctl export demo /private/demo.tar.gz
+vmctl import /private/demo.tar.gz restored-demo
+vmctl status restored-demo
+vmctl start restored-demo
+```
+
+Export requires a stopped instance and refuses to overwrite an existing archive.
+The versioned gzip/tar bundle contains the qcow2 disk, configuration, installation
+record, management credentials, optional SSH keys, NVRAM and persistent TPM files.
+Each payload file has a SHA-256 checksum. Import rejects unsafe paths, links,
+duplicate entries, unexpected files and checksum mismatches, and publishes the
+new instance directory only after validation. It refuses an existing instance
+name and leaves the imported instance stopped.
+
+The archive contains secrets and is **not encrypted**; store and transfer it as
+private material. Checksums detect corruption, not malicious replacement of a
+bundle and its manifest. Import only trusted exports. ISO files, runtime sockets,
+external snapshot directories and guest RAM are not exported. Internal qcow2
+checkpoints, if present, remain part of the disk file.
+
+To relocate media or change host ports, pass a complete configuration:
+
+```sh
+vmctl import /private/demo.tar.gz restored-demo --config local.json
+```
+
+Only media, network and console settings are taken from this configuration;
+machine and resource settings must match the export. Referenced local media must
+exist. Import preserves the guest's MAC, credentials and TPM identity: this is
+restoration, not identity regeneration or Sysprep cloning. Avoid concurrently
+running the original and restored guest on a shared network. Keep the runtime,
+CPU and firmware compatible; cross-host compatibility is not automatically
+certified. The existing installation phase is preserved, not re-verified.
+
+Preparation requires space for a private staging copy. Tar extraction does not
+preserve sparse allocation, so budget for expanded disk files even when the
+compressed archive is small. Imports are limited to 1 TiB of declared payload
+and 10,000 entries.
+
 ## Pause and resume
 
 `pause NAME` stops guest CPUs through QMP; `resume NAME` continues them. Both are
