@@ -16,6 +16,7 @@ type Status struct {
 	Name    string      `json:"name"`
 	Phase   state.Phase `json:"installation"`
 	Running bool        `json:"running"`
+	Runtime string      `json:"runtime"`
 }
 
 func (m Manager) Status(ctx context.Context, name string) (Status, error) {
@@ -26,7 +27,7 @@ func (m Manager) Status(ctx context.Context, name string) (Status, error) {
 	if err != nil {
 		return Status{}, err
 	}
-	result := Status{Name: name, Phase: instance.Record.Phase}
+	result := Status{Name: name, Phase: instance.Record.Phase, Runtime: "stopped"}
 	exists, err := m.Docker.Exists(ctx, instance.Directory)
 	if err != nil || !exists {
 		return result, err
@@ -36,6 +37,13 @@ func (m Manager) Status(ctx context.Context, name string) (Status, error) {
 		return Status{}, err
 	}
 	result.Running = container.State.Running
+	if container.State.Running {
+		runtime, err := queryRunState(ctx, instance.Directory)
+		if err != nil {
+			return Status{}, err
+		}
+		result.Runtime = runtime.Status
+	}
 	return result, nil
 }
 
