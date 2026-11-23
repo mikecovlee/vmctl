@@ -33,6 +33,10 @@ func (m Manager) Start(ctx context.Context, name string, installing bool) (err e
 	if !installing && i.Record.Phase == state.Created {
 		return fmt.Errorf("%w: install the instance first", ErrState)
 	}
+	credentials, err := readCredentials(filepath.Join(i.Directory, "credentials.json"))
+	if err != nil {
+		return err
+	}
 	exists, err := m.Docker.Exists(ctx, i.Directory)
 	if err != nil {
 		return err
@@ -43,6 +47,9 @@ func (m Manager) Start(ctx context.Context, name string, installing bool) (err e
 			return err
 		}
 		if c.State.Running {
+			if installing {
+				return m.finishLaunch(ctx, i, credentials, true)
+			}
 			return nil
 		}
 	}
@@ -61,26 +68,16 @@ func (m Manager) Start(ctx context.Context, name string, installing bool) (err e
 			return err
 		}
 	}
-	data, err := os.ReadFile(filepath.Join(i.Directory, "credentials.json"))
-	if err != nil {
-		return err
-	}
-	var credentials Credentials
-	if err := json.Unmarshal(data, &credentials); err != nil {
-		return err
-	}
 	args := docker.RunArgs(i.Spec, i.Directory, m.Image)
 	args = append(args, "qemu-system-x86_64")
 	args = append(args, docker.QEMUArgs(i.Spec, i.Record.MAC, installing)...)
 	if _, err := m.Docker.Run(ctx, args...); err != nil {
 		return err
 	}
-	if installing {
-		i.Record.Phase = state.Installing
-		if err := m.Store.Save(i.Record); err != nil {
-			return err
-		}
-	}
+	return m.finishLaunch(ctx, i, credentials, installing)
+}
+
+func (m Manager) finishLaunch(ctx context.Context, i Instance, credentials Credentials, installing bool) error {
 	arguments, err := json.Marshal(struct {
 		Protocol string `json:"protocol"`
 		Password string `json:"password"`
@@ -96,6 +93,10 @@ func (m Manager) Start(ctx context.Context, name string, installing bool) (err e
 	for {
 		last = qmp.Execute(ready, filepath.Join(i.Directory, "qmp.sock"), qmp.Command{Name: "set_password", Arguments: arguments})
 		if last == nil {
+			if installing {
+				i.Record.Phase = state.Installing
+				return m.Store.Save(i.Record)
+			}
 			return nil
 		}
 		select {
