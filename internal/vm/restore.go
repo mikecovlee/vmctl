@@ -55,6 +55,9 @@ func (m Manager) Restore(ctx context.Context, name, label string, confirmed bool
 	}
 	defer func() { err = errors.Join(err, os.RemoveAll(staged)) }()
 	files := []string{"disk.qcow2", "nvram.fd", "tpm", "state.json"}
+	if err := validatePersistentFiles(source, i.Spec.Machine); err != nil {
+		return err
+	}
 	for _, file := range files {
 		path := filepath.Join(source, file)
 		if _, e := os.Lstat(path); errors.Is(e, os.ErrNotExist) && (file == "nvram.fd" || file == "tpm") {

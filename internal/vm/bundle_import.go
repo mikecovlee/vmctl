@@ -77,12 +77,14 @@ func (m Manager) Import(ctx context.Context, opts ImportOptions) (record state.R
 			return record, fmt.Errorf("%w: media is not a file", ErrState)
 		}
 	}
-	for file, required := range map[string]bool{"nvram.fd": spec.Machine.Firmware == "uefi", "tpm": spec.Machine.TPM} {
-		if required {
-			if _, e := os.Stat(filepath.Join(tmp, file)); e != nil {
-				return record, e
-			}
-		}
+	if err := validatePersistentFiles(tmp, spec.Machine); err != nil {
+		return record, err
+	}
+	if _, err := readCredentials(filepath.Join(tmp, "credentials.json")); err != nil {
+		return record, err
+	}
+	if err := m.validateBundleDisk(ctx, tmp); err != nil {
+		return record, err
 	}
 	spec.Name = opts.Name
 	record.Name = opts.Name

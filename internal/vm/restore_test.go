@@ -42,6 +42,29 @@ func TestRestoreRecoversAllPersistentComponents(t *testing.T) {
 	if err := m.Snapshot(context.Background(), "demo", "baseline"); err != nil {
 		t.Fatal(err)
 	}
+	// Required firmware must be checked before replacing any live file.
+	if err := os.Remove(filepath.Join(dir, "snapshots/baseline/nvram.fd")); err != nil {
+		t.Fatal(err)
+	}
+	i, err := os.ReadFile(filepath.Join(dir, "spec.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "spec.json"), []byte(`{"name":"demo","machine":{"firmware":"uefi","tpm":true}}`), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := m.Restore(context.Background(), "demo", "baseline", true); err == nil {
+		t.Fatal("missing firmware accepted")
+	}
+	if _, err := os.Stat(filepath.Join(dir, "nvram.fd")); err != nil {
+		t.Fatal("live firmware lost")
+	}
+	if err := os.WriteFile(filepath.Join(dir, "spec.json"), i, 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "snapshots/baseline/nvram.fd"), []byte("original"), 0600); err != nil {
+		t.Fatal(err)
+	}
 	for _, file := range files {
 		if err := os.WriteFile(filepath.Join(dir, file), []byte("changed"), 0600); err != nil {
 			t.Fatal(err)

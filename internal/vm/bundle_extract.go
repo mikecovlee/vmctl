@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func extractBundle(ctx context.Context, archive, dir string) error {
@@ -40,6 +41,16 @@ func extractBundle(ctx context.Context, archive, dir string) error {
 			return fmt.Errorf("%w: unsafe archive entry %q", ErrState, h.Name)
 		}
 		total += h.Size
+		limit := int64(1 << 20)
+		if h.Name == "nvram.fd" || strings.HasPrefix(h.Name, "tpm/") {
+			limit = 64 << 20
+		}
+		if h.Name == "manifest.json" {
+			limit = 4 << 20
+		}
+		if h.Name != "disk.qcow2" && h.Size > limit {
+			return fmt.Errorf("%w: metadata entry too large", ErrState)
+		}
 		if total > 1<<40 || len(seen) >= 10000 {
 			return fmt.Errorf("%w: archive exceeds import limits", ErrState)
 		}
@@ -52,7 +63,7 @@ func extractBundle(ctx context.Context, archive, dir string) error {
 		if e != nil {
 			return e
 		}
-		_, copyErr := io.Copy(out, tr)
+		_, copyErr := copyContext(ctx, out, tr)
 		closeErr := out.Close()
 		if copyErr != nil {
 			return copyErr

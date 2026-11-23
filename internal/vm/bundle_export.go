@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 )
@@ -93,7 +92,7 @@ func (m Manager) Export(ctx context.Context, name, output string) (err error) {
 		if e != nil {
 			return e
 		}
-		_, e = io.Copy(tw, in)
+		_, e = copyContext(ctx, tw, in)
 		return errors.Join(e, in.Close())
 	})
 	return errors.Join(walkErr, tw.Close(), gz.Close(), f.Sync())

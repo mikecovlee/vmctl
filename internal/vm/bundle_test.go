@@ -65,6 +65,11 @@ func TestBundleRoundTripPreservesIdentity(t *testing.T) {
 		t.Fatal(err)
 	}
 	archive := filepath.Join(root, "export.tgz")
+	probe := filepath.Join(root, "docker-probe")
+	if err := os.WriteFile(probe, []byte("#!/bin/sh\ncase \" $* \" in *' info '*) printf '{\"format\":\"qcow2\"}';; esac\n"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	m.Docker.Binary = probe
 	if err := m.Export(ctx, "source", archive); err != nil {
 		t.Fatal(err)
 	}
