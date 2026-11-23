@@ -1,6 +1,6 @@
 # Contributing
 
-Use Go 1.25 or newer. Legacy root shell scripts are retained for migration reference and are not the new runtime.
+Use Go 1.25 or newer. Automated coding assistants should also follow [AGENTS.md](AGENTS.md).
 
 ```sh
 go test -race -shuffle=on -count=1 ./...
