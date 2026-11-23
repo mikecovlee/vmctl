@@ -119,6 +119,7 @@ func New() *cobra.Command {
 	root.AddCommand(stop, remove)
 	o.addRuntimeCommands(root)
 	o.addSnapshotCommands(root)
+	o.addBundleCommands(root)
 	return root
 }
 
