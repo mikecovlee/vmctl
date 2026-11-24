@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"vmctl/internal/qmp"
 )
@@ -14,9 +15,18 @@ import (
 // Checkpoint uses QEMU's internal VM snapshots, including RAM and device state.
 // Firmware and external TPM state cannot be captured atomically by savevm.
 func (m Manager) Checkpoint(ctx context.Context, name, label string, restore bool) (err error) {
+	return m.CheckpointWithTimeout(ctx, name, label, restore, 5*time.Minute)
+}
+
+func (m Manager) CheckpointWithTimeout(ctx context.Context, name, label string, restore bool, timeout time.Duration) (err error) {
+	if timeout <= 0 {
+		return fmt.Errorf("%w: checkpoint timeout must be positive", ErrState)
+	}
 	if err := ctx.Err(); err != nil {
 		return err
 	}
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
 	if !snapshotName.MatchString(label) {
 		return fmt.Errorf("%w: invalid checkpoint name", ErrState)
 	}
@@ -56,8 +66,11 @@ func (m Manager) Checkpoint(ctx context.Context, name, label string, restore boo
 	if err != nil {
 		return err
 	}
-	result, err := qmp.Query(ctx, filepath.Join(i.Directory, "qmp.sock"), qmp.Command{Name: "human-monitor-command", Arguments: args})
+	result, err := qmp.Query(ctx, filepath.Join(i.Directory, "qmp.sock"), qmp.Command{Name: "human-monitor-command", Arguments: args, Timeout: timeout})
 	if err != nil {
+		if errors.Is(err, qmp.ErrOutcomeUnknown) {
+			return fmt.Errorf("checkpoint outcome unknown; QEMU may still be processing; inspect status before retrying: %w", err)
+		}
 		return err
 	}
 	var output string
