@@ -12,6 +12,13 @@ The initial boot
 tries installation media; subsequent guest reboots prefer disk. After installation,
 `finish-install NAME` records the user's declaration, not a verified result.
 
+The Windows example configures SSH during the first administrator login. Check
+`C:\vmctl-install-complete.txt` through the example's generated SSH key before
+declaring completion. `C:\vmctl-ssh-ready.txt` confirms SSH setup only: an optional
+software hook can still fail afterward. Logs and the failure marker are described
+in the example README. The generic `verify` command remains specific to
+Kickstart/Linux; SSH availability does not make it a Windows verifier.
+
 For Kickstart, `install NAME --wait` waits for the installer to shut down. A zero
 container exit changes the state only to `installed-unverified`. Run `start NAME`
 and then `verify NAME`: the current verifier uses the instance SSH key to check

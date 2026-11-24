@@ -52,6 +52,11 @@ For the tested zero-input Windows 11 Pro installation, follow
 [examples/windows11](examples/windows11/README.md).
 Its single tested build reached the desktop automatically; Windows activation
 and comprehensive guest verification are separate and remain untested.
+The Windows example now prepares offline, key-only OpenSSH by default. Its host
+script downloads a pinned MSI, or accepts `OPENSSH_MSI` and `OPENSSH_SHA256` for
+offline preparation. The default tested package is an upstream Preview release,
+not production-ready. Optional `POST_INSTALL_SCRIPT` and `SOFTWARE_DIR` inputs
+provide an offline software-installation hook; see the example for details.
 
 ## Design
 

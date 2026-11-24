@@ -6,6 +6,26 @@ x86-64 installation media. Existing legacy VM storage was not modified.
 
 ## Executed
 
+### Windows offline SSH bootstrap follow-up
+
+A separate fresh Pro 26300.9457 instance installed with zero keyboard/mouse input
+and reached key-only SSH using a bundled Microsoft-signed OpenSSH
+10.4.0.0p1-Preview x64 MSI. The trial verified its SHA-256 and Authenticode
+signature, automatic/running sshd, disabled password and keyboard-interactive
+authentication, administrator authorized-key ACLs, and SSH reconnect after normal
+shutdown/start with strict host-key checking. Guest checks also reported Secure
+Boot enabled and TPM ready. This does not prove activation or remote attestation.
+
+That trial used a private prototype. The subsequent repository bootstrap and
+software-hook example passed Windows PowerShell parser checks; preparation passed
+syntax, checksum-rejection, offline/no-download and download-failure cleanup tests.
+The new automatic download success path has not been re-tested end to end, and
+the final repository scripts have not undergone another full fresh installation.
+No third-party software package has been installed through the optional hook in
+an end-to-end test. These are remaining validation gaps, not passing results.
+
+### Core lifecycle
+
 - `go test -race -shuffle=on ./...` and `go vet ./...` passed.
 - A dedicated Kylin instance completed unattended installation, disk boot and
   SSH acceptance. Guest identity was Kylin Linux Advanced Server V10 (Halberd),

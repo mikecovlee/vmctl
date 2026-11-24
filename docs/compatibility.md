@@ -1,5 +1,12 @@
 # Guest compatibility
 
+The Windows 11 example includes offline OpenSSH bootstrap. A separate zero-input
+trial on Pro 26300.9457 verified key-only SSH, automatic sshd startup and reconnect
+after normal shutdown/start with the same host key. The tested MSI is
+10.4.0.0p1-Preview (upstream labels it non-production-ready). Preparation supports
+a pinned host download or a supplied local MSI; neither requires guest Internet
+access. See [validation](validation.md) for the remaining test boundaries.
+
 Requires a Linux x86_64 host, Docker Engine access, and `/dev/kvm`. Windows hosts and ARM hosts are outside this release's scope.
 
 | Example | Installation | Hardware | Verification status |
