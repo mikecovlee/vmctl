@@ -1,0 +1,10 @@
+{
+  "apiVersion": "v1alpha1",
+  "name": "ubuntu",
+  "resources": {"cpu": 2, "memoryMiB": 2048, "diskGiB": 20},
+  "media": {"iso": "./generated/ubuntu-autoinstall.iso"},
+  "machine": {"firmware": "bios", "secureBoot": false, "tpm": false, "diskBus": "virtio", "nic": "virtio-net-pci"},
+  "install": {"mode": "manual"},
+  "network": {"mode": "isolated", "forwards": [{"bind": "127.0.0.1", "host": 2260, "guest": 22}]},
+  "console": {"vncBind": "127.0.0.1", "vncPort": 5960}
+}
