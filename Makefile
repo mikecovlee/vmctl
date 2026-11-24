@@ -1,4 +1,4 @@
-.PHONY: build test vet runtime dist clean
+.PHONY: build test vet check runtime dist clean
 
 build:
 	go build -trimpath -o bin/vmctl ./cmd/vmctl
@@ -8,6 +8,9 @@ test:
 
 vet:
 	go vet ./...
+
+check:
+	sh scripts/check.sh
 
 runtime:
 	docker build -t vmctl-runtime:local runtime
