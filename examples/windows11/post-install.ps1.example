@@ -1,0 +1,15 @@
+$ErrorActionPreference = 'Stop'
+Start-Transcript -Path C:\vmctl-post-install.log -Force
+try {
+    # Copy this file elsewhere and supply it through POST_INSTALL_SCRIPT.
+    # Offline packages copied through SOFTWARE_DIR are available beside this script.
+    $software = Join-Path $PSScriptRoot 'software'
+    # Example for a trusted MSI (verify its hash/signature before enabling):
+    # $package = Join-Path $software 'application.msi'
+    # $process = Start-Process msiexec.exe -ArgumentList @('/i', "`"$package`"", '/qn', '/norestart') -Wait -PassThru
+    # if ($process.ExitCode -notin @(0,3010)) { throw "Installer failed: $($process.ExitCode)" }
+    # Record a pending reboot for exit code 3010; do not reboot this bootstrap.
+} catch {
+    Write-Error $_
+    exit 1
+} finally { Stop-Transcript }

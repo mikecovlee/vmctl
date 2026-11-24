@@ -5,6 +5,6 @@
   "media": {"iso": "./generated/windows-noprompt.iso"},
   "machine": {"firmware": "uefi", "secureBoot": true, "tpm": true, "diskBus": "sata", "nic": "e1000"},
   "install": {"mode": "manual"},
-  "network": {"mode": "isolated"},
+  "network": {"mode": "isolated", "forwards": [{"bind": "127.0.0.1", "host": 2225, "guest": 22}]},
   "console": {"vncBind": "127.0.0.1", "vncPort": 5904}
 }

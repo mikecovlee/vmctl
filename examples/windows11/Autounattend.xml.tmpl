@@ -27,7 +27,7 @@
       <OOBE><HideEULAPage>true</HideEULAPage><HideOnlineAccountScreens>true</HideOnlineAccountScreens><HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE><ProtectYourPC>3</ProtectYourPC></OOBE>
       <UserAccounts><LocalAccounts><LocalAccount wcm:action="add"><Name>vmctl</Name><DisplayName>vmctl</DisplayName><Group>Administrators</Group><Password><Value>__PASSWORD__</Value><PlainText>true</PlainText></Password></LocalAccount></LocalAccounts></UserAccounts>
       <AutoLogon><Username>vmctl</Username><Enabled>true</Enabled><LogonCount>1</LogonCount><Password><Value>__PASSWORD__</Value><PlainText>true</PlainText></Password></AutoLogon>
-      <FirstLogonCommands><SynchronousCommand wcm:action="add"><Order>1</Order><Description>Record installation completion</Description><CommandLine>cmd /c echo installed&gt;C:\vmctl-install-complete.txt</CommandLine></SynchronousCommand></FirstLogonCommands>
+      <FirstLogonCommands><SynchronousCommand wcm:action="add"><Order>1</Order><Description>Configure SSH and optional software</Description><CommandLine>powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\vmctl\bootstrap.ps1</CommandLine></SynchronousCommand></FirstLogonCommands>
     </component>
   </settings>
 </unattend>
