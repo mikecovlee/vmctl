@@ -2,6 +2,13 @@
 set -euo pipefail
 umask 077
 root=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+shared_root=$root
+profile=${VMCTL_WINDOWS_PROFILE:-windows11}
+case "$profile" in
+    windows11) ;;
+    server2025) root="$root/../windows-server2025" ;;
+    *) printf 'Unknown Windows profile\n' >&2; exit 1 ;;
+esac
 iso=${1:?Usage: bash prepare.sh /path/to/windows11.iso}
 [[ -f "$iso" ]] || { printf 'ISO not found: %s\n' "$iso" >&2; exit 1; }
 for tool in 7z openssl genisoimage ssh-keygen sha256sum; do
@@ -48,19 +55,39 @@ payload="$out/tree/sources/\$OEM\$/\$1/vmctl"
 mkdir -p "$payload"
 cp "$msi" "$payload/OpenSSH.msi"
 printf '%s\n' "$digest" > "$payload/OpenSSH.sha256"
-cp "$root/bootstrap.ps1" "$out/client-key.pub" "$payload/"
+cp "$shared_root/bootstrap.ps1" "$out/client-key.pub" "$payload/"
 [[ -z "${POST_INSTALL_SCRIPT:-}" ]] || cp "$POST_INSTALL_SCRIPT" "$payload/post-install.ps1"
 [[ -z "${SOFTWARE_DIR:-}" ]] || cp -R "$SOFTWARE_DIR" "$payload/software"
+if [[ "$profile" == windows11 ]]; then
 [[ -f "$out/tree/efi/microsoft/boot/efisys_noprompt.bin" ]] || {
     printf 'This media lacks the expected no-prompt UEFI boot image\n' >&2
     exit 1
 }
+else
+    [[ -f "$out/tree/boot/etfsboot.com" ]] || { printf 'Missing BIOS boot image\n' >&2; exit 1; }
+fi
 password="Vm9!$(openssl rand -hex 12)"
 printf '%s\n' "$password" > "$out/password.txt"
 # This Pro default setup key selects the edition; it does not activate Windows.
+if [[ "$profile" == windows11 ]]; then
 sed "s/__PASSWORD__/$password/g; s#<UserData>#<UserData><ProductKey><Key>VK7JG-NPHTM-C97JM-9MPGT-3V66T</Key><WillShowUI>Never</WillShowUI></ProductKey>#" \
     "$template" > "$out/tree/Autounattend.xml"
 genisoimage -quiet -o "$out/windows-noprompt.iso" -iso-level 4 -udf \
     -allow-limited-size -J -joliet-long -relaxed-filenames -V VMCTL_WINDOWS \
     -e efi/microsoft/boot/efisys_noprompt.bin -no-emul-boot "$out/tree"
+else
+    index=${WINDOWS_IMAGE_INDEX:-2}
+    [[ "$index" =~ ^[1-9][0-9]*$ ]] || { printf 'Invalid WINDOWS_IMAGE_INDEX\n' >&2; exit 1; }
+    key=${WINDOWS_PRODUCT_KEY:-}
+    [[ -z "$key" || "$key" =~ ^[A-Za-z0-9]{5}(-[A-Za-z0-9]{5}){4}$ ]] || { printf 'Invalid WINDOWS_PRODUCT_KEY format\n' >&2; exit 1; }
+    product_key=
+    if [[ -n "$key" ]]; then
+        product_key="<ProductKey><Key>$key</Key><WillShowUI>Never</WillShowUI></ProductKey>"
+    fi
+    sed "s/__PASSWORD__/$password/g; s/__IMAGE_INDEX__/$index/g; s#__PRODUCT_KEY__#$product_key#g" "$template" > "$out/tree/Autounattend.xml"
+    rm -f "$out/tree/boot/bootfix.bin"
+    genisoimage -quiet -o "$out/windows-noprompt.iso" -iso-level 4 -udf \
+        -allow-limited-size -J -joliet-long -relaxed-filenames -V VMCTL_SERVER \
+        -b boot/etfsboot.com -no-emul-boot -boot-load-size 8 "$out/tree"
+fi
 printf 'Prepared private installation media: %s\n' "$out/windows-noprompt.iso"
