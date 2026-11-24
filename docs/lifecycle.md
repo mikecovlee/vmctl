@@ -62,8 +62,9 @@ are accepted. Required NVRAM/TPM components must have the expected types.
 The archive contains secrets and is **not encrypted**; store and transfer it as
 private material. Checksums detect corruption, not malicious replacement of a
 bundle and its manifest. Import only trusted exports. ISO files, runtime sockets,
-external snapshot directories and guest RAM are not exported. Internal qcow2
-checkpoints, if present, remain part of the disk file.
+external snapshot directories and the live QEMU process are not exported. Internal
+qcow2 checkpoints remain part of the copied disk and can contain saved guest RAM;
+treat the bundle as potentially containing memory secrets as well as disk data.
 
 To relocate media or change host ports, pass a complete configuration:
 
@@ -109,16 +110,25 @@ record into a private instance-local directory. Running instances are rejected;
 existing snapshot labels cannot be overwritten. Restore replaces those files,
 requires a stopped instance and explicit confirmation, and leaves it stopped.
 Missing required UEFI or TPM state is rejected before any live file is replaced.
-These copies do not include RAM, external installation media, credentials or the
-instance configuration. Keep the configuration and media compatible. Copying can
+These copies do not separately capture live RAM, external installation media, credentials or the
+instance configuration. Internal qcow2 checkpoints, including their saved RAM,
+remain in the copied disk. Keep the configuration and media compatible. Copying can
 consume substantial space. Runtime errors during restore trigger rollback; abrupt
 host power loss during its multi-file replacement is not transactionally covered.
 
 ## Experimental memory checkpoints
 
+Linux RAM rollback has been tested on Ubuntu 24.04.5 with BIOS, no TPM, 2 vCPUs
+and 2 GiB RAM. The same process retained its PID and randomly generated identity
+while its memory-only value and counter returned to the saved values. Both CLI
+save and restore completed without a timeout in this test. This is not a blanket
+compatibility guarantee for all Linux distributions, application consistency or
+cross-host restoration. See the [validation record](validation.md#linux-memory-checkpoint).
+
 ```sh
 vmctl checkpoint demo before-change --yes
 vmctl restore-checkpoint demo before-change --yes
+vmctl checkpoint demo large-save --yes --timeout 10m
 ```
 
 These use QEMU internal `savevm`/`loadvm` snapshots inside the qcow2, capturing RAM,
@@ -129,5 +139,8 @@ may be replaced, hence confirmation is required for both operations. Restore can
 discard subsequent guest work and can leave the guest running; inspect `status`.
 Use the same runtime image, CPU and machine configuration. Cross-version or
 cross-host portability and application-level consistency are not guaranteed.
-The CLI's QMP deadline can expire while QEMU is still processing a large memory
-snapshot; a timeout is not proof of cancellation. Inspect QEMU before retrying.
+Checkpoint commands wait up to five minutes by default; `--timeout` accepts a
+positive duration for both save and restore. Ordinary QMP requests and checkpoint
+handshakes retain their ten-second bound. The deadline can expire while QEMU is
+still processing a large memory snapshot; a timeout is not proof of cancellation.
+An interrupted command reports an unknown outcome. Inspect QEMU before retrying.

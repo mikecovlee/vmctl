@@ -12,6 +12,7 @@ Requires a Linux x86_64 host, Docker Engine access, and `/dev/kvm`. Windows host
 | Example | Installation | Hardware | Verification status |
 | --- | --- | --- | --- |
 | Linux manual | Interactive ISO | BIOS, VirtIO | Experimental |
+| [Ubuntu 24.04 LTS](../examples/ubuntu/README.md) | Server ISO with embedded autoinstall | BIOS, no TPM, VirtIO; 2 vCPU, 2 GiB, 20 GiB | 24.04.5 ISO installation, SSH, restart, RAM checkpoint rollback and checkpoint retention across export/import verified |
 | Kylin V10 SP3 | Kickstart | BIOS, VirtIO | Tested: unattended install, disk boot, SSH acceptance, QMP ACPI shutdown |
 | [Windows Server 2025](../examples/windows-server2025/README.md) (recommended for services/checkpoints) | BIOS answer media and offline SSH | BIOS, no TPM, SATA, e1000 | Standard Evaluation 26100: zero-input installation, SSH and RAM-only process state rollback tested; large checkpoints can exceed CLI timeout |
 | Windows manual | Interactive ISO | UEFI, SATA, e1000 | Experimental; general Windows versions not tested |
@@ -23,6 +24,11 @@ Manual installation uses `create`, `install`, then VNC. After installation, `fin
 UEFI/TPM profile.** `checkpoint` and `restore-checkpoint` reject this configuration.
 Pause/resume and stopped snapshots/export/import remain available. Use the BIOS,
 no-TPM Server 2025 example for experimental memory checkpoints.
+
+Linux memory checkpoints have also been verified on Ubuntu 24.04.5 using BIOS
+without TPM: process identity and PID were preserved while RAM-only values
+rolled back. This does not imply every Linux distribution or application has
+been tested. See the [checkpoint evidence](validation.md#linux-memory-checkpoint).
 
 Windows licenses and media are user-supplied. SATA and e1000 avoid initial VirtIO driver requirements. Enabling hardware options does not prove guest-side Secure Boot or TPM validation. The unattended example is tested only on the build listed above; automatic Windows verification, Sysprep cloning, and snapshot portability are not included.
 

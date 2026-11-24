@@ -48,6 +48,14 @@ bin/vmctl delete my-vm --yes
 `finish-install` records a user declaration, not a successful verification.
 For unattended Kylin installation, follow
 [examples/kylin-v10](examples/kylin-v10/README.md).
+For unattended Ubuntu Server ISO installation and key-only SSH,
+follow [examples/ubuntu](examples/ubuntu/README.md).
+**Linux memory checkpoints have been verified on Ubuntu 24.04.5, BIOS without
+TPM:** checkpoint/restore rolled back a running process's RAM-only value and
+counter while retaining its PID and random identity. This verifies the Linux
+checkpoint path on the tested Ubuntu configuration; it is not a guarantee for
+every Linux distribution or application. See the
+[validation record](docs/validation.md#linux-memory-checkpoint).
 For Windows services and memory-checkpoint experiments, we recommend
 [Windows Server 2025](examples/windows-server2025/README.md): BIOS, no TPM,
 unattended installation and SSH. For Windows 11 desktop workloads, follow

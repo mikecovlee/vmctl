@@ -1,5 +1,54 @@
 # Validation record
 
+## Linux memory checkpoint
+
+Linux memory checkpoint/restore was verified on Ubuntu **24.04.5 LTS**, initialized from the official Noble cloud image using
+NoCloud, with BIOS, no TPM, 2 vCPUs, 2048 MiB RAM, a 20 GiB VirtIO
+disk and isolated networking. Cloud-init completed, key-only SSH worked, and a
+normal ACPI shutdown/start preserved the guest and SSH host identity.
+
+A temporary systemd service ran a Python process whose random identity, value
+and mutation counter existed only in RAM. Each observation used a fresh SSH
+connection. The results were:
+
+| Observation | PID | RAM value | Mutation counter |
+| --- | --- | --- | --- |
+| Before `checkpoint` | 1271 | `before` | 0 |
+| After mutation | 1271 | `after` | 1 |
+| After `restore-checkpoint` | 1271 | `before` | 0 |
+
+The random process identity remained identical across all three observations.
+Both vmctl checkpoint commands returned successfully without a timeout. This
+demonstrates Linux process-memory rollback, not merely restoration of a file.
+The test service and script were removed afterward; restoring the retained
+checkpoint would bring those artifacts back.
+
+The repository's single-ISO autoinstall example was subsequently executed against
+Ubuntu 24.04.5 live-server media (SHA-256
+`97f3d7ffb032c3eb3b23d2c8be9cc76e60c2c1f2c0146ba5ba9fe01cafae0fd8`).
+It installed to a fresh empty disk offline, powered off automatically, and booted
+from disk with key-only SSH, the installation marker and a 20 GiB root partition.
+Normal shutdown/start preserved SSH host identity. A temporary Bash process then
+retained PID 1583 and random identity `e42dcb8d-e293-4b20-8206-28bd33325b21`
+while its RAM-only value/counter changed `before/0` → `after/1` → `before/0`.
+Both checkpoint CLI operations succeeded with the new five-minute default.
+
+A stopped snapshot and export/import preserved the internal `iso-ram` checkpoint
+(953 MiB of saved VM state). Actual restore in the imported instance recovered
+the same process identity and `before/0` values. Test scripts/services were removed
+and guests stopped afterward; retained checkpoints can restore those artifacts.
+Other Linux versions, database consistency and cross-host/runtime portability
+remain unverified.
+
+Windows Server 2025 BIOS/no-TPM checkpoint save and restore also returned success
+with the new default. The first normal stop immediately after restore timed out;
+a subsequent normal stop succeeded. No forced power-off was used.
+
+On the ISO-installed Ubuntu guest, controlled host TCP and UDP endpoints were
+first verified reachable from the host, then blocked in isolated mode and reachable
+in egress mode. Both guest probes confirmed no IPv6 default route. The disposable
+instance configuration was returned to isolated mode and the instance stopped.
+
 This is a foundation release candidate, not a claim that every guest OS is
 certified. Tests ran on a Linux Docker/KVM host using the supplied Kylin V10
 x86-64 installation media. Existing legacy VM storage was not modified.
