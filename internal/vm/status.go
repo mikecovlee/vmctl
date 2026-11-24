@@ -13,10 +13,11 @@ import (
 var ErrConfirmation = errors.New("destructive operation requires --yes")
 
 type Status struct {
-	Name    string      `json:"name"`
-	Phase   state.Phase `json:"installation"`
-	Running bool        `json:"running"`
-	Runtime string      `json:"runtime"`
+	Name        string      `json:"name"`
+	Phase       state.Phase `json:"installation"`
+	Running     bool        `json:"running"`
+	Runtime     string      `json:"runtime"`
+	NetworkMode string      `json:"networkMode"`
 }
 
 func (m Manager) Status(ctx context.Context, name string) (Status, error) {
@@ -28,6 +29,10 @@ func (m Manager) Status(ctx context.Context, name string) (Status, error) {
 		return Status{}, err
 	}
 	result := Status{Name: name, Phase: instance.Record.Phase, Runtime: "stopped"}
+	result.NetworkMode = instance.Spec.Network.Mode
+	if result.NetworkMode == "egress" {
+		result.NetworkMode = "nat"
+	}
 	exists, err := m.Docker.Exists(ctx, instance.Directory)
 	if err != nil || !exists {
 		return result, err
