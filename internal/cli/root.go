@@ -120,6 +120,7 @@ func New() *cobra.Command {
 	o.addRuntimeCommands(root)
 	o.addSnapshotCommands(root)
 	o.addBundleCommands(root)
+	o.addNetworkCommands(root)
 	return root
 }
 
