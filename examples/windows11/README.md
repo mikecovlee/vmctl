@@ -1,5 +1,11 @@
 # Windows 11
 
+**Live memory checkpoints are not supported for this Windows 11 profile.**
+Its UEFI/TPM configuration is rejected by `checkpoint` and `restore-checkpoint`.
+Pause/resume and stopped snapshots/export/import remain supported; pausing alone
+does not save RAM to disk. For memory-checkpoint experiments, use the
+[Windows Server 2025 BIOS profile](../windows-server2025/README.md).
+
 One fresh installation of **Windows 11 Pro 26300.9457, WIM index 4**
 reached the desktop with **no keyboard or mouse input**, including across Setup
 reboots and offline OOBE. Resources: 2 vCPUs, 4096 MiB RAM, 64 GiB disk;

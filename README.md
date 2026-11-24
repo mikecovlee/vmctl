@@ -48,8 +48,12 @@ bin/vmctl delete my-vm --yes
 `finish-install` records a user declaration, not a successful verification.
 For unattended Kylin installation, follow
 [examples/kylin-v10](examples/kylin-v10/README.md).
-For the tested zero-input Windows 11 Pro installation, follow
+For Windows services and memory-checkpoint experiments, we recommend
+[Windows Server 2025](examples/windows-server2025/README.md): BIOS, no TPM,
+unattended installation and SSH. For Windows 11 desktop workloads, follow
 [examples/windows11](examples/windows11/README.md).
+**The Windows 11 UEFI/TPM profile does not support live memory checkpoints.**
+It supports pause/resume and stopped snapshots/export/import instead.
 Its single tested build reached the desktop automatically; Windows activation
 and comprehensive guest verification are separate and remain untested.
 The Windows example now prepares offline, key-only OpenSSH by default. Its host

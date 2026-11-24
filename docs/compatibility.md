@@ -13,10 +13,16 @@ Requires a Linux x86_64 host, Docker Engine access, and `/dev/kvm`. Windows host
 | --- | --- | --- | --- |
 | Linux manual | Interactive ISO | BIOS, VirtIO | Experimental |
 | Kylin V10 SP3 | Kickstart | BIOS, VirtIO | Tested: unattended install, disk boot, SSH acceptance, QMP ACPI shutdown |
+| [Windows Server 2025](../examples/windows-server2025/README.md) (recommended for services/checkpoints) | BIOS answer media and offline SSH | BIOS, no TPM, SATA, e1000 | Standard Evaluation 26100: zero-input installation, SSH and RAM-only process state rollback tested; large checkpoints can exceed CLI timeout |
 | Windows manual | Interactive ISO | UEFI, SATA, e1000 | Experimental; general Windows versions not tested |
 | [Windows 11](../examples/windows11/README.md) | Derived no-prompt UEFI ISO with answer file | 2 vCPU, 4096 MiB, 64 GiB; UEFI, Secure Boot, TPM 2, SATA, e1000 | Pro 26300.9457: one fresh install reached desktop with zero keyboard/mouse input; Windows acceptance pending |
 
 Manual installation uses `create`, `install`, then VNC. After installation, `finish-install` records the user's declaration, not a verified operating system. CD-ROM boots first initially, then disk on subsequent boots. `media.extraISOs` supplies optional driver media.
+
+**Windows 11: live memory checkpoints are not supported by vmctl's current
+UEFI/TPM profile.** `checkpoint` and `restore-checkpoint` reject this configuration.
+Pause/resume and stopped snapshots/export/import remain available. Use the BIOS,
+no-TPM Server 2025 example for experimental memory checkpoints.
 
 Windows licenses and media are user-supplied. SATA and e1000 avoid initial VirtIO driver requirements. Enabling hardware options does not prove guest-side Secure Boot or TPM validation. The unattended example is tested only on the build listed above; automatic Windows verification, Sysprep cloning, and snapshot portability are not included.
 
