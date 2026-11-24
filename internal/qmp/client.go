@@ -10,10 +10,12 @@ import (
 )
 
 var ErrProtocol = errors.New("QMP protocol error")
+var ErrOutcomeUnknown = errors.New("QMP command outcome unknown")
 
 type Command struct {
 	Name      string
 	Arguments json.RawMessage
+	Timeout   time.Duration
 }
 
 type response struct {
@@ -39,7 +41,11 @@ func Query(ctx context.Context, path string, command Command) (json.RawMessage, 
 }
 
 func exchange(ctx context.Context, path string, command Command, result *json.RawMessage) error {
-	bounded, cancel := context.WithTimeout(ctx, 10*time.Second)
+	timeout := command.Timeout
+	if timeout <= 0 {
+		timeout = 10 * time.Second
+	}
+	bounded, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 	conn, err := (&net.Dialer{}).DialContext(bounded, "unix", path)
 	if err != nil {
@@ -53,6 +59,12 @@ func exchange(ctx context.Context, path string, command Command, result *json.Ra
 	if err := conn.SetDeadline(deadline); err != nil {
 		return err
 	}
+	handshakeDeadline := time.Now().Add(10 * time.Second)
+	if handshakeDeadline.Before(deadline) {
+		if err := conn.SetDeadline(handshakeDeadline); err != nil {
+			return err
+		}
+	}
 	stop := context.AfterFunc(bounded, func() { conn.Close() })
 	defer stop()
 	decoder := json.NewDecoder(conn)
@@ -64,6 +76,7 @@ func exchange(ctx context.Context, path string, command Command, result *json.Ra
 	if len(greeting.Greeting) == 0 {
 		return fmt.Errorf("%w: missing greeting", ErrProtocol)
 	}
+	dispatched := false
 	for index, cmd := range []Command{{Name: "qmp_capabilities"}, command} {
 		id := fmt.Sprintf("vmctl-%d", index)
 		request := struct {
@@ -71,12 +84,27 @@ func exchange(ctx context.Context, path string, command Command, result *json.Ra
 			Arguments json.RawMessage `json:"arguments,omitempty"`
 			ID        string          `json:"id"`
 		}{cmd.Name, cmd.Arguments, id}
+		if index == 1 {
+			if err := bounded.Err(); err != nil {
+				return err
+			}
+			if err := conn.SetDeadline(deadline); err != nil {
+				return err
+			}
+			dispatched = true
+		}
 		if err := encoder.Encode(request); err != nil {
+			if dispatched {
+				return errors.Join(ErrOutcomeUnknown, bounded.Err(), err)
+			}
 			return err
 		}
 		for {
 			var reply response
 			if err := decoder.Decode(&reply); err != nil {
+				if dispatched {
+					return errors.Join(ErrOutcomeUnknown, bounded.Err(), err)
+				}
 				return fmt.Errorf("QMP %s: %w", cmd.Name, err)
 			}
 			if reply.Event != "" {
