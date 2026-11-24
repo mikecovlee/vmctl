@@ -16,7 +16,7 @@ printf '%s\0' examples/windows-server2025/prepare.sh examples/windows-server2025
 printf '%s\0' examples/ubuntu/prepare.sh examples/ubuntu/.gitignore >> "$manifest"
 find docs -type f -name '*.md' -print0 >> "$manifest"
 find scripts -type f -name '*.sh' -print0 >> "$manifest"
-printf '%s\0' scripts/repository-check.go >> "$manifest"
+printf '%s\0' scripts/repository-check.go scripts/check_test.go scripts/release_test.go >> "$manifest"
 find .github/workflows -type f \( -name '*.yml' -o -name '*.yaml' \) -print0 >> "$manifest"
 tar --null -T "$manifest" -czf dist/vmctl-source.tar.gz
 printf '%s\n' 'dist/vmctl-source.tar.gz'

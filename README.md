@@ -86,12 +86,15 @@ provide an offline software-installation hook; see the example for details.
   `logs` and `image build` emit runtime text rather than JSON.
 
 See [configuration](docs/configuration.md), [lifecycle](docs/lifecycle.md),
-[security](SECURITY.md), and [contributing](CONTRIBUTING.md).
+[operations](docs/operations.md), [security](SECURITY.md), and
+[contributing](CONTRIBUTING.md). `vmctl version --json` reports build identity
+and supported configuration/bundle formats.
 
 ## Scope
 
-The first release focuses on single-host lifecycle management, manual ISO
-installation and a generic Kickstart template renderer. It does not provide
+The [v1.0 release goals](docs/v1.0.md) track single-host lifecycle reliability,
+ISO installation, recovery, backup restoration and operational acceptance.
+The first release does not provide
 clone commands, a web UI, clusters, live migration or a Windows-host backend.
 Pause/resume, stopped disk/NVRAM/TPM snapshots and experimental BIOS-only memory
 checkpoints are documented in [lifecycle](docs/lifecycle.md).

@@ -25,6 +25,7 @@ func New() *cobra.Command {
 	root.PersistentFlags().StringVar(&o.directory, "state-dir", "", "Instance state directory")
 	root.PersistentFlags().StringVar(&o.image, "image", "vmctl-runtime:local", "Runtime image")
 	root.PersistentFlags().BoolVar(&o.jsonOutput, "json", false, "Emit JSON")
+	root.AddCommand(versionCommand())
 	root.AddCommand(&cobra.Command{Use: "validate CONFIG", Args: cobra.ExactArgs(1), RunE: func(cmd *cobra.Command, args []string) error {
 		spec, err := config.Read(args[0])
 		if err != nil {

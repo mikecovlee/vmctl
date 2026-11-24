@@ -17,3 +17,12 @@ jobs:
       - run: go test -race -shuffle=on -count=1 ./...
       - run: go build -trimpath ./cmd/vmctl
       - run: sh scripts/check.sh
+      - name: Check candidate packaging
+        env:
+          VMCTL_COMMIT: ${{ github.sha }}
+        run: |
+          make release VERSION=v0.0.0-rc.0
+          cd dist
+          sha256sum -c vmctl-v0.0.0-rc.0-linux-amd64.tar.gz.sha256
+          tar -xzf vmctl-v0.0.0-rc.0-linux-amd64.tar.gz
+          ./vmctl-v0.0.0-rc.0-linux-amd64/vmctl version --json

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"vmctl/internal/docker"
@@ -26,6 +27,15 @@ func (m Manager) Start(ctx context.Context, name string, installing bool) (err e
 	i, err := m.Load(name)
 	if err != nil {
 		return err
+	}
+	entries, err := os.ReadDir(i.Directory)
+	if err != nil {
+		return err
+	}
+	for _, entry := range entries {
+		if strings.HasPrefix(entry.Name(), ".restore-") || strings.HasPrefix(entry.Name(), ".rollback-") {
+			return fmt.Errorf("%w: interrupted restore data at %s; recover persistent files before starting", ErrState, filepath.Join(i.Directory, entry.Name()))
+		}
 	}
 	if installing && i.Record.Phase != state.Created {
 		return fmt.Errorf("%w: installation already started", ErrState)
