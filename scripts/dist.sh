@@ -12,6 +12,7 @@ find runtime -type f \( -name Dockerfile -o -name '*.sh' \) -print0 >> "$manifes
 find examples -type f \( -name vm.json -o -name '*-manual.json' -o -name '*.tmpl' -o -name README.md \) -print0 >> "$manifest"
 printf '%s\0' examples/windows11/prepare.sh examples/windows11/.gitignore >> "$manifest"
 printf '%s\0' examples/windows11/bootstrap.ps1 examples/windows11/post-install.ps1.example >> "$manifest"
+printf '%s\0' examples/windows-server2025/prepare.sh examples/windows-server2025/.gitignore >> "$manifest"
 find docs -type f -name '*.md' -print0 >> "$manifest"
 find scripts -type f -name '*.sh' -print0 >> "$manifest"
 find .github/workflows -type f \( -name '*.yml' -o -name '*.yaml' \) -print0 >> "$manifest"
