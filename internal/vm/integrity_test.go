@@ -19,7 +19,7 @@ func TestRequiredFirmwareMissingIsRejected(t *testing.T) {
 }
 
 func TestDiskValidationRejectsRawAndBackingFiles(t *testing.T) {
-	for _, output := range []string{`{"format":"raw"}`, `{"format":"qcow2","backing-filename":"other.qcow2"}`, `not json`} {
+	for _, output := range []string{`{"format":"raw"}`, `{"format":"qcow2","backing-filename":"other.qcow2"}`, `{"format":"qcow2","format-specific":{"type":"qcow2","data":{"data-file":"/instance/external.raw"}}}`, `not json`} {
 		path := filepath.Join(t.TempDir(), "docker")
 		if err := os.WriteFile(path, []byte("#!/bin/sh\nprintf '%s' '"+output+"'\n"), 0700); err != nil {
 			t.Fatal(err)

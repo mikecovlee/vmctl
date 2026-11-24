@@ -100,14 +100,18 @@ func (m Manager) validateBundleDisk(ctx context.Context, dir string) error {
 		return err
 	}
 	var info struct {
-		Format   string `json:"format"`
-		Backing  string `json:"backing-filename"`
-		DataFile string `json:"data-file"`
+		Format         string `json:"format"`
+		Backing        string `json:"backing-filename"`
+		FormatSpecific struct {
+			Data struct {
+				DataFile string `json:"data-file"`
+			} `json:"data"`
+		} `json:"format-specific"`
 	}
 	if err = json.Unmarshal(out, &info); err != nil {
 		return err
 	}
-	if info.Format != "qcow2" || info.Backing != "" || info.DataFile != "" {
+	if info.Format != "qcow2" || info.Backing != "" || info.FormatSpecific.Data.DataFile != "" {
 		return fmt.Errorf("%w: disk must be a self-contained qcow2", ErrState)
 	}
 	_, err = m.Docker.Run(ctx, append(base, "check", "-f", "qcow2", "/instance/disk.qcow2")...)
