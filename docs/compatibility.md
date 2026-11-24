@@ -20,4 +20,4 @@ Manual installation uses `create`, `install`, then VNC. After installation, `fin
 
 Windows licenses and media are user-supplied. SATA and e1000 avoid initial VirtIO driver requirements. Enabling hardware options does not prove guest-side Secure Boot or TPM validation. The unattended example is tested only on the build listed above; automatic Windows verification, Sysprep cloning, and snapshot portability are not included.
 
-Isolated networking restricts outbound traffic while preserving explicit incoming TCP forwards. Egress mode explicitly permits outbound traffic. IPv6 is disabled in this backend. Neither mode creates a shared guest LAN.
+Isolated networking restricts outbound traffic while preserving explicit incoming TCP forwards. NAT mode (`nat`, legacy alias `egress`) explicitly permits outbound traffic. Incoming forwards support TCP only, not UDP. IPv6 is disabled in this backend. Neither mode creates a shared guest LAN. Modes and forwards can be changed with `vmctl network` while the instance is stopped.
