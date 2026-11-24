@@ -122,8 +122,7 @@ This example and the Kylin example both default to VNC port 5904. Set a differen
   the input media size), plus the separate VM disk. The original ISO is unchanged.
 - Keep the derived ISO available while the instance references it. Never commit
   or publish generated media, rendered answers, passwords or Windows images.
-- This is one successful zero-input installation, not a repeatability guarantee
-  for every Windows build. A separate offline SSH trial on this build verified
+- The tested build completed zero-input installation. A separate offline SSH trial verified
   key login, automatic service startup, guest Secure Boot/TPM readiness and login
   after normal shutdown/start. Activation and RDP remain unverified. The CLI's
   Linux/Kickstart `verify` is not Windows verification; status remains

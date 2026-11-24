@@ -69,9 +69,9 @@ verified on that ISO-installed guest: a process retained its PID and random RAM
 identity while its value and mutation counter rolled back. Export/import retained
 the internal checkpoint and successfully restored it. See the
 [validation record](../../docs/validation.md#linux-memory-checkpoint).
-Checkpoints remain experimental and require BIOS without TPM; runtime/host
-portability and application consistency are not guaranteed. A timeout does not
-cancel a QEMU operation. See [lifecycle](../../docs/lifecycle.md).
+Checkpoints require BIOS without TPM. Keep the same runtime and machine
+configuration when restoring. A timeout does not cancel a QEMU operation.
+See [lifecycle](../../docs/lifecycle.md).
 
 Generated media, keys and state are ignored and excluded from source archives.
 Keep resource-limited guest tests sequential.

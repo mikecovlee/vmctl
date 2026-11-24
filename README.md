@@ -4,9 +4,8 @@ Configuration-driven Linux and Windows virtual machines on a Linux host,
 using Docker, QEMU and KVM. Kylin is an example configuration, not a special
 case in the lifecycle engine.
 
-**Development preview.** The JSON contract is `v1alpha1`. Windows examples
-have build-specific evidence, not blanket compatibility guarantees. See
-[compatibility](docs/compatibility.md) for evidence and limitations.
+**Development preview.** The JSON contract is `v1alpha1`. See
+[compatibility](docs/compatibility.md) for tested guest versions and configurations.
 
 ## Requirements
 
@@ -52,9 +51,7 @@ For unattended Ubuntu Server ISO installation and key-only SSH,
 follow [examples/ubuntu](examples/ubuntu/README.md).
 **Linux memory checkpoints have been verified on Ubuntu 24.04.5, BIOS without
 TPM:** checkpoint/restore rolled back a running process's RAM-only value and
-counter while retaining its PID and random identity. This verifies the Linux
-checkpoint path on the tested Ubuntu configuration; it is not a guarantee for
-every Linux distribution or application. See the
+counter while retaining its PID and random identity. See the
 [validation record](docs/validation.md#linux-memory-checkpoint).
 For Windows services and memory-checkpoint experiments, we recommend
 [Windows Server 2025](examples/windows-server2025/README.md): BIOS, no TPM,
@@ -62,8 +59,8 @@ unattended installation and SSH. For Windows 11 desktop workloads, follow
 [examples/windows11](examples/windows11/README.md).
 **The Windows 11 UEFI/TPM profile does not support live memory checkpoints.**
 It supports pause/resume and stopped snapshots/export/import instead.
-Its single tested build reached the desktop automatically; Windows activation
-and comprehensive guest verification are separate and remain untested.
+The tested Windows 11 build reached the desktop automatically. See the
+validation record for installation and SSH results.
 The Windows example now prepares offline, key-only OpenSSH by default. Its host
 script downloads a pinned MSI, or accepts `OPENSSH_MSI` and `OPENSSH_SHA256` for
 offline preparation. The default tested package is an upstream Preview release,
@@ -85,7 +82,6 @@ provide an offline software-installation hook; see the example for details.
   `stop --force` cuts power. Containers have no automatic restart policy.
 - `verify` performs read-only guest checks for the Kickstart completion marker
   and mounted installation media, then records the verified installation state.
-  It is not a comprehensive OS or network security audit.
 - Structured command output is indented JSON; `--json` selects compact JSON.
   `logs` and `image build` emit runtime text rather than JSON.
 
