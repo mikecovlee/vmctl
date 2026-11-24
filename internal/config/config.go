@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"net"
+	"net/netip"
 	"regexp"
 )
 
@@ -135,12 +135,14 @@ func (s Spec) validate() error {
 	default:
 		return bad("install.mode")
 	}
-	if net.ParseIP(s.Console.VNCBind) == nil || s.Console.VNCPort < 5900 || s.Console.VNCPort > 65535 {
+	vncAddress, err := netip.ParseAddr(s.Console.VNCBind)
+	if err != nil || !vncAddress.Is4() || s.Console.VNCPort < 5900 || s.Console.VNCPort > 65535 {
 		return bad("console")
 	}
 	ports := map[int]bool{s.Console.VNCPort: true}
 	for _, f := range s.Network.Forwards {
-		if net.ParseIP(f.Bind) == nil || f.Host < 1 || f.Host > 65535 || f.Guest < 1 || f.Guest > 65535 || ports[f.Host] {
+		address, err := netip.ParseAddr(f.Bind)
+		if err != nil || !address.Is4() || f.Host < 1 || f.Host > 65535 || f.Guest < 1 || f.Guest > 65535 || ports[f.Host] {
 			return bad("network.forwards")
 		}
 		ports[f.Host] = true

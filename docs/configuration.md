@@ -50,6 +50,9 @@ rule checks current listener availability; startup checks again because other
 processes can claim ports afterward. Bind `0.0.0.0` only when LAN exposure is
 intended; host and guest firewalls still apply. The guest service must listen.
 
+Forward `bind` and `console.vncBind` accept IPv4 addresses only; IPv6 bindings
+are rejected during configuration parsing.
+
 `console.vncBind` and `console.vncPort` control the authenticated VNC listener.
 Use an SSH tunnel for remote access: classic VNC authentication does not encrypt
 the session. `console NAME --show-secret` explicitly reveals the per-instance
