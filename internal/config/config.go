@@ -83,6 +83,9 @@ func Parse(r io.Reader) (Spec, error) {
 			s.Network.Forwards[i].Bind = "127.0.0.1"
 		}
 	}
+	if s.Network.Mode == "egress" {
+		s.Network.Mode = "nat"
+	}
 	if err := s.validate(); err != nil {
 		return Spec{}, err
 	}
@@ -101,7 +104,7 @@ func (s Spec) validate() error {
 		return bad("media.iso")
 	}
 	switch s.Network.Mode {
-	case "isolated", "egress":
+	case "isolated", "nat":
 	default:
 		return bad("network.mode")
 	}
