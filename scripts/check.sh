@@ -2,7 +2,11 @@
 set -eu
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$root"
-find scripts runtime examples -type f -name '*.sh' -exec bash -n {} \;
+find scripts runtime examples -type f -name '*.sh' -exec bash -c '
+    for script do
+        bash -n "$script" || exit 1
+    done
+' bash {} +
 go run ./scripts/repository-check.go
 sh scripts/dist.sh
 scratch=$(mktemp -d)
