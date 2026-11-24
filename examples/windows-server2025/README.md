@@ -54,9 +54,19 @@ vmctl restore-checkpoint windows-server2025 before-change --yes
 Tested on Server 2025 Standard Evaluation 26100: zero-input install, SSH, MBR disk,
 TPM absent, and restoration of a process's RAM-only value and counter with the
 same PID, startup time and random identity. Memory snapshot size was 3.87 GiB.
-This is not a cross-host or database-consistency guarantee.
 
-**Known limitation:** a large checkpoint can exceed the current CLI QMP timeout
-while QEMU continues saving. The RAM rollback test used a longer-waiting QMP
-connection for restoration. Do not assume a timeout cancels the operation or
-immediately repeat it. See [lifecycle](../../docs/lifecycle.md).
+Checkpoint commands now wait up to five minutes by default. A subsequent trial
+successfully saved and restored through the CLI with that default. For longer
+operations, set an explicit positive duration:
+
+```sh
+vmctl checkpoint windows-server2025 before-change --yes --timeout 10m
+vmctl restore-checkpoint windows-server2025 before-change --yes --timeout 10m
+```
+
+The earlier RAM rollback trial exceeded the old CLI deadline and used a
+longer-waiting QMP connection for restoration. Any finite deadline can still
+expire while QEMU continues processing; inspect status before retrying. In the
+subsequent CLI trial, the first normal stop immediately after restore timed out;
+a later normal stop succeeded without forced power-off. See
+[lifecycle](../../docs/lifecycle.md) and the [validation record](../../docs/validation.md).

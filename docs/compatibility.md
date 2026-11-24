@@ -14,9 +14,9 @@ Requires a Linux x86_64 host, Docker Engine access, and `/dev/kvm`. Windows host
 | Linux manual | Interactive ISO | BIOS, VirtIO | Experimental |
 | [Ubuntu 24.04 LTS](../examples/ubuntu/README.md) | Server ISO with embedded autoinstall | BIOS, no TPM, VirtIO; 2 vCPU, 2 GiB, 20 GiB | 24.04.5 ISO installation, SSH, restart, RAM checkpoint rollback and checkpoint retention across export/import verified |
 | Kylin V10 SP3 | Kickstart | BIOS, VirtIO | Tested: unattended install, disk boot, SSH acceptance, QMP ACPI shutdown |
-| [Windows Server 2025](../examples/windows-server2025/README.md) (recommended for services/checkpoints) | BIOS answer media and offline SSH | BIOS, no TPM, SATA, e1000 | Standard Evaluation 26100: zero-input installation, SSH and RAM-only process state rollback tested; large checkpoints can exceed CLI timeout |
+| [Windows Server 2025](../examples/windows-server2025/README.md) (recommended for services/checkpoints) | BIOS answer media and offline SSH | BIOS, no TPM, SATA, e1000 | Standard Evaluation 26100: zero-input installation, SSH and RAM-only rollback tested; subsequent CLI save/restore passed with default 5m wait; first stop after restore timed out, later normal stop passed |
 | Windows manual | Interactive ISO | UEFI, SATA, e1000 | Experimental; general Windows versions not tested |
-| [Windows 11](../examples/windows11/README.md) | Derived no-prompt UEFI ISO with answer file | 2 vCPU, 4096 MiB, 64 GiB; UEFI, Secure Boot, TPM 2, SATA, e1000 | Pro 26300.9457: one fresh install reached desktop with zero keyboard/mouse input; Windows acceptance pending |
+| [Windows 11](../examples/windows11/README.md) | Derived no-prompt UEFI ISO with answer file | 2 vCPU, 4096 MiB, 64 GiB; UEFI, Secure Boot, TPM 2, SATA, e1000 | Pro 26300.9457: zero-input desktop installation; separate prototype verified SSH, restart and guest Secure Boot/TPM readiness; final repository scripts not fully redeployed; activation and RDP unverified |
 
 Manual installation uses `create`, `install`, then VNC. After installation, `finish-install` records the user's declaration, not a verified operating system. CD-ROM boots first initially, then disk on subsequent boots. `media.extraISOs` supplies optional driver media.
 
