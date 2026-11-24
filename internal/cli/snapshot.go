@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"time"
+
 	"github.com/spf13/cobra"
 	"vmctl/internal/vm"
 )
@@ -9,6 +11,7 @@ func (o *options) addSnapshotCommands(root *cobra.Command) {
 	for _, action := range []string{"checkpoint", "restore-checkpoint"} {
 		action := action
 		var yes bool
+		var timeout time.Duration
 		command := &cobra.Command{Use: action + " NAME LABEL", Short: "Save or restore BIOS guest memory and device state (experimental)", Args: cobra.ExactArgs(2), RunE: func(cmd *cobra.Command, args []string) error {
 			m, err := o.manager()
 			if err != nil {
@@ -17,9 +20,10 @@ func (o *options) addSnapshotCommands(root *cobra.Command) {
 			if !yes {
 				return vm.ErrConfirmation
 			}
-			return m.Checkpoint(cmd.Context(), args[0], args[1], action == "restore-checkpoint")
+			return m.CheckpointWithTimeout(cmd.Context(), args[0], args[1], action == "restore-checkpoint", timeout)
 		}}
 		command.Flags().BoolVar(&yes, "yes", false, "Confirm checkpoint write or rollback; an existing checkpoint label may be replaced")
+		command.Flags().DurationVar(&timeout, "timeout", 5*time.Minute, "Maximum time to wait for QEMU save or restore")
 		root.AddCommand(command)
 	}
 	root.AddCommand(&cobra.Command{Use: "snapshots NAME", Short: "List saved snapshots", Args: cobra.ExactArgs(1), RunE: func(cmd *cobra.Command, args []string) error {
