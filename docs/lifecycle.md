@@ -59,6 +59,12 @@ Import also validates management credentials and runs `qemu-img info/check`
 using the runtime image. Only self-contained qcow2 disks without backing files
 are accepted. Required NVRAM/TPM components must have the expected types.
 
+Only supported files inside the instance directory are bundled. Ubuntu and
+Windows examples keep their client SSH private keys and known-hosts files in the
+example's external `generated/` directory; export does not collect those files.
+Back them up and transfer them separately if you need SSH access after relocation.
+Kickstart's instance-local SSH identity is included when present.
+
 The archive contains secrets and is **not encrypted**; store and transfer it as
 private material. Checksums detect corruption, not malicious replacement of a
 bundle and its manifest. Import only trusted exports. ISO files, runtime sockets,
@@ -121,9 +127,8 @@ host power loss during its multi-file replacement is not transactionally covered
 Linux RAM rollback has been tested on Ubuntu 24.04.5 with BIOS, no TPM, 2 vCPUs
 and 2 GiB RAM. The same process retained its PID and randomly generated identity
 while its memory-only value and counter returned to the saved values. Both CLI
-save and restore completed without a timeout in this test. This is not a blanket
-compatibility guarantee for all Linux distributions, application consistency or
-cross-host restoration. See the [validation record](validation.md#linux-memory-checkpoint).
+save and restore completed successfully. See the
+[validation record](validation.md#linux-memory-checkpoint).
 
 ```sh
 vmctl checkpoint demo before-change --yes
@@ -137,8 +142,8 @@ CPU/device state and disk state. They currently require a live QEMU process and
 explicitly rejected: use stopped snapshots instead. Existing checkpoint labels
 may be replaced, hence confirmation is required for both operations. Restore can
 discard subsequent guest work and can leave the guest running; inspect `status`.
-Use the same runtime image, CPU and machine configuration. Cross-version or
-cross-host portability and application-level consistency are not guaranteed.
+Use the same runtime image, CPU and machine configuration. For applications with
+external dependencies, coordinate their state before saving or restoring.
 Checkpoint commands wait up to five minutes by default; `--timeout` accepts a
 positive duration for both save and restore. Ordinary QMP requests and checkpoint
 handshakes retain their ten-second bound. The deadline can expire while QEMU is
