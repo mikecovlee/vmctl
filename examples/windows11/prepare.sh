@@ -81,10 +81,12 @@ else
     key=${WINDOWS_PRODUCT_KEY:-}
     [[ -z "$key" || "$key" =~ ^[A-Za-z0-9]{5}(-[A-Za-z0-9]{5}){4}$ ]] || { printf 'Invalid WINDOWS_PRODUCT_KEY format\n' >&2; exit 1; }
     product_key=
+    specialize_key=
     if [[ -n "$key" ]]; then
         product_key="<ProductKey><Key>$key</Key><WillShowUI>Never</WillShowUI></ProductKey>"
+        specialize_key="<ProductKey>$key</ProductKey>"
     fi
-    sed "s/__PASSWORD__/$password/g; s/__IMAGE_INDEX__/$index/g; s#__PRODUCT_KEY__#$product_key#g" "$template" > "$out/tree/Autounattend.xml"
+    sed "s/__PASSWORD__/$password/g; s/__IMAGE_INDEX__/$index/g; s#__PRODUCT_KEY__#$product_key#g; s#__SPECIALIZE_PRODUCT_KEY__#$specialize_key#g" "$template" > "$out/tree/Autounattend.xml"
     rm -f "$out/tree/boot/bootfix.bin"
     genisoimage -quiet -o "$out/windows-noprompt.iso" -iso-level 4 -udf \
         -allow-limited-size -J -joliet-long -relaxed-filenames -V VMCTL_SERVER \
