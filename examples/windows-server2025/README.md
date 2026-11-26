@@ -19,9 +19,20 @@ vmctl install windows-server2025
 Default image index is **2 (Standard with Desktop Experience)** on the tested ISO.
 Check your ISO with `wiminfo`; set `WINDOWS_IMAGE_INDEX` for another index. The
 answer template uses zh-CN. For media requiring a setup key, supply
-`WINDOWS_PRODUCT_KEY`; installation does not imply activation. Evaluation media
-retains Microsoft's activation and expiry limits; non-evaluation media was not
-part of this test.
+`WINDOWS_PRODUCT_KEY`. The generator writes it into both `windowsPE` and
+`specialize`, covering Setup and first-boot key configuration. An omitted key
+emits neither element, preserving the no-key Evaluation workflow.
+
+For Standard media using KMS, Microsoft's client setup key can be supplied as:
+
+```sh
+WINDOWS_PRODUCT_KEY=TVRH6-WHNXV-R9WG3-9XRFY-MY832 \
+  bash examples/windows-server2025/prepare.sh /path/to/server2025.iso
+```
+
+This configures a KMS client; it does not activate Windows. Supply a matching key
+for other editions or licensing channels. Evaluation media retains Microsoft's
+activation and expiry limits.
 
 The generator shares OpenSSH bootstrap with the Windows 11 example. It accepts
 the same `OPENSSH_MSI`/`OPENSSH_SHA256` local-package overrides, or downloads the
